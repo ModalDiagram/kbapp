@@ -1,0 +1,26 @@
+[
+  {
+    "name": "firefox",
+    "up": "ctrl shift tab",
+    "left": "alt left",
+    "right": "alt right",
+    "down": "ctrl tab",
+    "delete": "ctrl w",
+    "search": "alt d"
+  },{
+    "name": "Spotify Premium",
+    "up": "exec:playerctl -p spotify previous",
+    "left": "alt left",
+    "right": "alt right",
+    "down": "exec:playerctl -p spotify next",
+    "search": "ctrl l"
+  },{
+    "name": "default",
+    "up": "super shift tab",
+    "down": "super tab",
+    "left": "super h",
+    "right": "super l",
+    "3hold": "ctrl mouse:left",
+    "4hold": "shift mouse:left"
+  }
+]
