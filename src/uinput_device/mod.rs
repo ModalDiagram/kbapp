@@ -19,7 +19,7 @@ use keys::MyKey;
 use std::sync::Mutex;
 
 lazy_static::lazy_static! {
-    static ref DEVICE: Mutex<Device> = Mutex::new(create_virtual_device().expect("Couldn't initialize virtual device"));
+    static ref DEVICE: Mutex<Device> = Mutex::new(create_uinput_device().expect("Couldn't initialize virtual device"));
 }
 
 // A command can either be a cmd to execute or a series of keyboard and mouse actions
@@ -30,7 +30,7 @@ pub enum MyCommand {
 }
 
 // create a virtual device able of emulating keyboard and mouse
-fn create_virtual_device() -> Result<Device, uinput::Error> {
+fn create_uinput_device() -> Result<Device, uinput::Error> {
     let device = uinput::open(std::path::Path::new("/dev/uinput"))?
         .name("kbapp-virtual-device")?
         // enable keyboard events
@@ -46,7 +46,7 @@ fn create_virtual_device() -> Result<Device, uinput::Error> {
 }
 
 // initialize the device at the start of the application by calling this function once
-pub fn initialize_virtual_device() {
+pub fn initialize_uinput_device() {
     if let Err(err) = DEVICE.lock() {
         println!("Couldn't initialize virtual device");
         println!("{err}");

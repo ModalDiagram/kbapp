@@ -29,16 +29,19 @@ enum Subcommands {
     },
 }
 
-pub fn parse_input() {
+pub fn parse_input() -> Vec<tokio::task::JoinHandle<()>> {
+    let mut listeners: Vec<tokio::task::JoinHandle<()>> = vec!();
     let args = Args::parse();
     match args.command {
-        Subcommands::GetName => {
-            println!("The name of the focused window is {}", super::focused::getfocusedwindow());
-            return;
-        }
-        Subcommands::Start => super::socket::listen(),
+        Subcommands::GetName => println!("The name of the focused window is {}", super::focused::getfocusedwindow()),
+        Subcommands::Start => {
+            listeners.push(tokio::spawn(async move { super::socket::listen(); }));
+            listeners.push(tokio::spawn(async move { super::gesture::listen(); }));
+            ()
+        },
         Subcommands::Action{name} => super::socket::send(&name),
         Subcommands::Launch{command} => super::socket::send(&format!("__launch:{}", command)),
         Subcommands::Reload => super::socket::send("__reload"),
     }
+    return listeners;
 }

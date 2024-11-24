@@ -2,8 +2,8 @@ use std::{fs::File, io::Read, collections::HashMap};
 use serde_json::Value;
 use lazy_static::lazy_static;
 use std::sync::Mutex;
-use super::virtual_device::MyCommand;
-use super::virtual_device;
+use super::uinput_device::MyCommand;
+use super::uinput_device;
 
 use dirs::config_dir;
 
@@ -35,13 +35,13 @@ pub fn execute_msg(action_name: &str) {
     if let Some(command) = get_binding(action_name) {
         match command {
             CommandValue::Command(command) => {
-                if let Err(_) = virtual_device::execute_cmd(command) {
+                if let Err(_) = uinput_device::execute_cmd(command) {
                     println!("Error in executing command");
                 }
             }
             CommandValue::Array(command_array) => {
                 for command in command_array {
-                    if let Err(_) = virtual_device::execute_cmd(command) {
+                    if let Err(_) = uinput_device::execute_cmd(command) {
                         println!("Error in executing one of the commands in the action");
                     }
                 }
@@ -53,8 +53,8 @@ pub fn execute_msg(action_name: &str) {
 // this function only executes a string of command specified with kbapp launch,
 // ignoring the focused window
 pub fn execute_custom(command: &str) {
-    if let Some(command) = virtual_device::get_mycommand(&command) {
-        if let Err(_) = virtual_device::execute_cmd(command) {
+    if let Some(command) = uinput_device::get_mycommand(&command) {
+        if let Err(_) = uinput_device::execute_cmd(command) {
             println!("Error in executing command");
         }
     }
@@ -169,7 +169,7 @@ fn get_hashmap() -> HashMap<String, CommandValue> {
             // array of commands
             match binding {
                 Value::String(binding) => {
-                    if let Some(command) = virtual_device::get_mycommand(&binding) {
+                    if let Some(command) = uinput_device::get_mycommand(&binding) {
                         new_map.insert(map_key, CommandValue::Command(command));
                     }
                     else {
@@ -181,7 +181,7 @@ fn get_hashmap() -> HashMap<String, CommandValue> {
                     let mut command_array: Vec<MyCommand> = Vec::new();
                     for binding in command_list {
                         if let Some(binding) = binding.as_str() {
-                            if let Some(command) = virtual_device::get_mycommand(binding) {
+                            if let Some(command) = uinput_device::get_mycommand(binding) {
                                 command_array.push(command);
                             }
                             else {

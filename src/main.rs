@@ -11,8 +11,14 @@ pub mod socket;
 pub mod app_bindings;
 
 // this module takes care of input emulation and execution of commands
-pub mod virtual_device;
+pub mod uinput_device;
 
-fn main() {
-    cli::parse_input();
+pub mod gesture;
+
+#[tokio::main]
+async fn main() {
+    let listeners = cli::parse_input();
+    for listener in listeners {
+        let _ = listener.await;
+    }
 }

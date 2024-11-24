@@ -18,7 +18,7 @@ pub fn listen() {
 
     let listener = UnixDatagram::bind(socket_path).unwrap();
     println!("Socket correctly initialized");
-    super::virtual_device::initialize_virtual_device();
+    super::uinput_device::initialize_uinput_device();
     super::app_bindings::initialize_map();
 
     // Indefinitely, it listens for messages to execute
@@ -34,12 +34,16 @@ pub fn listen() {
                     super::app_bindings::execute_custom(command);
                     continue;
                 }
-                match message.as_str() {
+                if message.as_str() == "__reload" {
                     // in this case we reload the config
-                    "__reload" => super::app_bindings::reload_map(),
-                    // in this case we execute the action
-                    _ => super::app_bindings::execute_msg(&message),
+                    super::app_bindings::reload_map();
                 }
+                else {
+                    // in this case we execute the action
+                    tokio::spawn(async move {
+                        super::app_bindings::execute_msg(&message);
+                    });
+                };
             }
         }
     }
